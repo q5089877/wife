@@ -16,11 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
       let permission = Notification.permission;
       console.log('原生 Notification.permission:', permission);
 
-      // 2. 如果還沒請求過或被拒絕，就呼叫 OneSignal.requestPermission()
+      // 2. 如果還沒請求過或被拒絕，就呼叫 OneSignal.Notifications.requestPermission()
       if (permission !== 'granted') {
         console.log('呼叫 OneSignal.Notifications.requestPermission()');
         await OneSignal.Notifications.requestPermission();
-        // 更新 permission 值
         permission = Notification.permission;
         console.log('授權後 Notification.permission:', permission);
       }
@@ -32,10 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       alert('✅ 通知權限取得成功');
 
-      // 4. 取得訂閱狀態，包括 userId
-      const deviceState = await OneSignal.getDeviceState();
-      const userId = deviceState.userId;
-      console.log('OneSignal Device State:', deviceState);
+      // 4. 取得 OneSignal User ID（v16+ API）
+      const userId = OneSignal.User.onesignalId;
+      console.log('OneSignal User ID:', userId);
       if (!userId) {
         alert('❌ 無法取得 OneSignal User ID');
         return;
@@ -43,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('✅ Push 訂閱成功\nUser ID: ' + userId);
 
       // 5. 自發一則本地測試通知
-      OneSignal.sendSelfNotification(
+      await OneSignal.sendSelfNotification(
         '測試通知',
         '這是使用 OneSignal SDK 推送的每日語錄',
         window.location.href,
