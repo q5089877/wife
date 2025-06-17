@@ -1,22 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
-  <title>PWA Push 測試</title>
- <!-- 1. 引入 OneSignal SDK -->
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
+  <title>OneSignal Push 測試</title>
+
+  <!-- 1️⃣ 載入 OneSignal SDK (必須在 init 之前) -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
+  <!-- 2️⃣ 初始化 OneSignal (在 SDK 之後) -->
+  <script defer>
+    // 加個 log 看它到底有沒有跑
+  console.log('▶️ OneSignal init script start');
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function(OneSignal) {
     await OneSignal.init({
       appId: "d95c1f3b-1979-4c55-b3dd-c0bb6361a12a",
     });
   });
-</script>
+  console.log('▶️ OneSignal init script end');
+  </script>
+
+  <!-- 3️⃣ 你的其他程式，例如綁按鈕 -->
+  <script src="app.js" defer></script>
 </head>
 <body>
-  <h1>每日語錄 App Push 測試-----</h1>
-  <button id="btn-subscribe">訂閱推播 & 顯示測試通知</button>
-  <script src="app.js"></script>
+  <h1>每日語錄 App Push（OneSignal）</h1>
 </body>
 </html>
+
+

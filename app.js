@@ -1,35 +1,28 @@
-// 1. 註冊 Service Worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js')
-    .then(reg => {
-      console.log('SW 註冊成功:', reg);
+// app.js
 
-      // 綁定按鈕：請求通知權限 + 取得訂閱 + 測試通知
-      document.getElementById('btn-subscribe').addEventListener('click', async () => {
-        // 2. 請求通知權限
-        const perm = await Notification.requestPermission();
-        if (perm !== 'granted') {
-          return alert('已取消通知授權');
-        }
+// 綁定按鈕，呼叫 OneSignal API
+document.getElementById('btn-subscribe')
+  .addEventListener('click', () => {
+    OneSignal.push(async () => {
+      // 1. 註冊推播權限
+      const granted = await OneSignal.registerForPushNotifications();
+      if (!granted) {
+        return alert('❌ 您拒絕了通知權限');
+      }
+      alert('✅ 通知權限取得成功');
 
-        // 3. 取得 PushSubscription（這裡使用空 options）
-        const swReg = await navigator.serviceWorker.ready;
-        const sub = await swReg.pushManager.subscribe({
-          userVisibleOnly: true,
-          // 將來此處要填入你的 VAPID public key
-          applicationServerKey: null
-        });
-        console.log('Push 訂閱物件：', sub);
+      // 2. 取得 OneSignal User ID
+      const userId = await OneSignal.getUserId();
+      console.log('OneSignal User ID:', userId);
+      alert('✅ 訂閱成功！User ID: ' + userId);
 
-        // 4. 手動觸發一條通知（測試用）
-        swReg.showNotification('測試通知', {
-          body: '這是本機模擬的每日語錄提醒！',
-          icon: 'icon.png',      // 可換成你的 App icon
-          tag: 'daily-quote-demo'
-        });
-      });
-    })
-    .catch(err => console.error('SW 註冊失敗：', err));
-} else {
-  alert('此瀏覽器不支援 Service Worker');
-}
+      // 3. 發送一則自我測試通知
+      OneSignal.sendSelfNotification(
+        "測試通知",
+        "這是使用 OneSignal 發送的每日語錄",
+        "https://你的域名/icon.png",
+        "https://你的域名/"
+      );
+      alert('✅ 測試通知已發送');
+    });
+  });
